@@ -9,6 +9,11 @@ module.exports = {
       res.json()
     );
     const user = res.results[0];
+    const fixDate = (user) => {
+      const date = user.dob.date;
+      const canUseDate = date.split("T")[0];
+      return canUseDate;
+    };
     const embed = new EmbedBuilder()
       .setColor("#0099ff")
       .setTitle("Random User")
@@ -33,7 +38,7 @@ module.exports = {
         },
         {
           name: "Date of Birth",
-          value: user.dob.date,
+          value: fixDate(user),
         }
       )
       .setTimestamp();
