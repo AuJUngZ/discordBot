@@ -24,5 +24,12 @@ module.exports = {
     await interaction.reply({
       embeds: [embed],
     });
+
+    // Log the command usage to the console
+    console.log(`
+    * ********************************************* *
+      ${interaction.user.tag} used the server command
+    * ********************************************* *
+    `);
   },
 };

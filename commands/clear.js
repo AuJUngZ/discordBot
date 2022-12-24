@@ -70,5 +70,11 @@ module.exports = {
         interaction.reply({ embeds: [Respon] });
       });
     }
+    // Log the command usage to the console
+    console.log(`
+    * ********************************************* *
+      ${interaction.user.tag} used the clear command
+    * ********************************************* *
+    `);
   },
 };
