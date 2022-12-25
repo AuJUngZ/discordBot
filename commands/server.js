@@ -26,10 +26,14 @@ module.exports = {
     });
 
     // Log the command usage to the console
-    console.log(`
-    * ********************************************* *
-      ${interaction.user.tag} used the server command
-    * ********************************************* *
-    `);
+    console.table({
+      "Command Name": "server",
+      "Command Author": interaction.user.tag,
+      "Command Channel": interaction.channel.name,
+      "Time Used": new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        hour12: false,
+      }),
+    });
   },
 };

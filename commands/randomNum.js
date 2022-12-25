@@ -31,10 +31,16 @@ module.exports = {
     });
 
     // Log the command usage to the console
-    console.log(`
-    * ********************************************* *
-      ${interaction.user.tag} used the randomnum command
-    * ********************************************* *
-    `);
+    console.table({
+      User: `${interaction.user.tag}`,
+      Command: "randomnum",
+      Min: `${min}`,
+      Max: `${max}`,
+      RandomNum: `${randomNum}`,
+      "Time Used": `${new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        hour12: false,
+      })}`,
+    });
   },
 };

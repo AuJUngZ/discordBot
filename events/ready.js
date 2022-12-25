@@ -4,10 +4,10 @@ module.exports = {
   name: "ready",
   once: true,
   async execute(client) {
-    console.log(`
-    * ********************************************* *
-      Bot is online! Logged in as ${client.user.tag}
-    * ********************************************* *
-    `);
+    console.table({
+      "Bot Tag": client.user.tag,
+      "Bot Status": client.user.presence.status,
+      Ping: `${client.ws.ping}ms`,
+    });
   },
 };

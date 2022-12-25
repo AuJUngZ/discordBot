@@ -1,4 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  CommandInteractionOptionResolver,
+} = require("discord.js");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -45,10 +49,14 @@ module.exports = {
     await interaction.reply({ embeds: [embed] });
 
     // Log the command usage to the console
-    console.log(`
-    * ********************************************* *
-      ${interaction.user.tag} used the randomuser command
-    * ********************************************* *
-    `);
+    console.table({
+      "Command Name": "randomuser",
+      "Command author": interaction.user.tag,
+      "Command Channel": interaction.channel.name,
+      "Time Used": new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        hour12: false,
+      }),
+    });
   },
 };

@@ -8,10 +8,13 @@ module.exports = {
     await interaction.reply("Pong!");
 
     // Log the command usage to the console
-    console.log(`
-    * ********************************************* *
-      ${interaction.user.tag} used the ping command
-    * ********************************************* *
-    `);
+    console.table({
+      User: `${interaction.user.tag}`,
+      Command: "ping",
+      "Time Used": `${new Date().toLocaleString("en-US", {
+        timeZone: "Asia/Bangkok",
+        hour12: false,
+      })}`,
+    });
   },
 };

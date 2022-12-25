@@ -71,10 +71,10 @@ module.exports = {
       });
     }
     // Log the command usage to the console
-    console.log(`
-    * ********************************************* *
-      ${interaction.user.tag} used the clear command
-    * ********************************************* *
-    `);
+    console.table({
+      UsedCommand: interaction.commandName,
+      User: interaction.user.tag,
+      Channel: interaction.channel.name,
+    });
   },
 };
