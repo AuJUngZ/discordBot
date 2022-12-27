@@ -5,6 +5,7 @@ const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
 // const path = require("node:path");
 const loadCommand = require("./Handler/commands");
 const loadEvent = require("./Handler/event");
+const registerCommands = require("./register");
 
 config();
 const token = process.env.TOKEN;
@@ -20,5 +21,6 @@ const client = new Client({
 client.commands = new Collection();
 loadCommand(client);
 loadEvent(client);
+registerCommands(client);
 // Log in to Discord with your client's token
 client.login(token);

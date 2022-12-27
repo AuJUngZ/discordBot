@@ -4,12 +4,10 @@ const path = require("path");
 function commandLoader(client) {
   const commandPath = path.join(process.cwd(), "commands");
   const commandFiles = scanDir(commandPath);
-  //   console.log(commandFiles);
 
   for (const file of commandFiles) {
     const filePath = path.join(process.cwd(), file);
     const command = require(filePath);
-
     if ("data" in command && "execute" in command) {
       client.commands.set(command.data.name, command);
     } else {
