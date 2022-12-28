@@ -4,15 +4,15 @@ This project is a my first project about Discord bot. This bot can do everything
 
 ## Features
 
-[x] Find a cpe's person information
-[x] Ramdom user
-[x] Ramdom number
-[x] Ramdom number in a range
+- [x] Find a cpe's person information
+- [x] Ramdom user
+- [x] Ramdom number
+- [x] Ramdom number in a range
 
 ## Comming soon
 
-[] Play music \*\*
-[] some other features
+- [] Play music \*\*
+- [] some other features
 
 ## How to use
 
