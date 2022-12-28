@@ -1,2 +1,26 @@
-# discordBot
- I am learning how to make a discord bot.
+## About this project
+
+This project is a my first project about Discord bot. This bot can do everything that I want. I hope you like it.
+
+## Features
+
+[x] Find a cpe's person information
+[x] Ramdom user
+[x] Ramdom number
+[x] Ramdom number in a range
+
+## Comming soon
+
+[] Play music \*\*
+[] some other features
+
+## How to use
+
+1. Clone this project
+2. Install dependencies
+3. Create a file named `.env` and write everything in `.env.example` file
+4. Run `npm start` or `yarn start`
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
