@@ -7,8 +7,8 @@ config();
 
 const token = process.env.TOKEN;
 const clientId = process.env.CLIENT_ID;
-const guildId = process.env.GUILD_ID;
-
+const guildId = process.env.GUILD_ID.split(",");
+console.log(guildId);
 const commands = [];
 function registerCommands() {
   const commandPath = path.join(process.cwd(), "commands");
@@ -28,10 +28,16 @@ function registerCommands() {
       );
 
       // The put method is used to fully refresh all commands in the guild with the current set
-      const data = await rest.put(
-        Routes.applicationGuildCommands(clientId, guildId),
-        { body: commands }
-      );
+      let data = [];
+      guildId.forEach(async (id) => {
+        data = await rest.put(Routes.applicationGuildCommands(clientId, id), {
+          body: commands,
+        });
+      });
+      // const data = await rest.put(
+      //   Routes.applicationGuildCommands(clientId, guildId),
+      //   { body: commands }
+      // );
 
       console.log(
         `Successfully reloaded ${data.length} application (/) commands.`
