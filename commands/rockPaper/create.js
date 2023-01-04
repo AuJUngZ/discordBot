@@ -7,9 +7,6 @@ const {
 } = require("discord.js");
 const { connectDB } = require("../../functions/functions.js");
 
-let hostChoice;
-let opponentChoice;
-
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("rpscreate")
@@ -56,7 +53,7 @@ module.exports = {
       .setColor("#fff")
       .setTitle("Rock Paper Scissors")
       .setDescription(
-        `You have been challenged to a game of rock paper scissors by **${interaction.user.tag}**. \n\n The bet is **${bet} coins**.`
+        `${opponent} You have been challenged to a game of rock paper scissors by **${interaction.user.tag}**. \n\n The bet is **${bet} coins**.`
       )
       .setFooter({
         text: "Rock Paper Scissors",
@@ -141,61 +138,144 @@ module.exports = {
             ],
             components: [row1],
           });
-          //create a new collector for host to choose
+          //create a new collector for host and opponent to choose their move
+          let hostChoice;
+          let opponentChoice;
           const filter = (i) => i.user.id === interaction.user.id;
           const collector1 =
             interaction.channel.createMessageComponentCollector({
               filter,
               time: 15000,
             });
+          //if host choose their move
           collector1.on("collect", async (i) => {
-            if (i.customId === "rock") {
-              hostChoice = "rock";
-            } else if (i.customId === "paper") {
-              hostChoice = "paper";
-            } else if (i.customId === "scissors") {
-              hostChoice = "scissors";
-            }
-            await i.update({
-              embeds: [
-                embed.setDescription(
-                  `Host has chosen. \n\n **${opponent.tag}** choose your move. **pls select in 15 sec!!**`
-                ),
-              ],
-            });
-            //create a new collector for opponent to choose
-            const filter = (i) => i.user.id === opponent.id;
-            const collector2 =
-              interaction.channel.createMessageComponentCollector({
-                filter,
-                time: 15000,
-              });
-            collector2.on("collect", async (i) => {
-              if (i.customId === "rock") {
-                opponentChoice = "rock";
-              } else if (i.customId === "paper") {
-                opponentChoice = "paper";
-              } else if (i.customId === "scissors") {
-                opponentChoice = "scissors";
-              }
+            if (
+              i.customId === "rock" ||
+              i.customId === "paper" ||
+              i.customId === "scissors"
+            ) {
+              hostChoice = i.customId;
               await i.update({
                 embeds: [
                   embed.setDescription(
-                    `Opponent has chosen. waiting for the result...`
+                    `**${opponent.tag}** has accepted the challenge. \n\n The game has been started.
+                            \n**${interaction.user.tag}** Already selected. **Then let's Opponent select.** \n\n **pls select in 15 sec!!**`
                   ),
                 ],
-                components: [],
+                components: [row1],
               });
-            });
-            //wait for opponent to choose
+
+              //create a new collector for opponent to choose their move
+              const filter = (i) => i.user.id === opponent.id;
+              const collector =
+                interaction.channel.createMessageComponentCollector({
+                  filter,
+                  time: 15000,
+                });
+              //if opponent choose their move
+              collector.on("collect", async (i) => {
+                if (
+                  i.customId === "rock" ||
+                  i.customId === "paper" ||
+                  i.customId === "scissors"
+                ) {
+                  opponentChoice = i.customId;
+                }
+                //find the winner
+                const winner = findWinner(hostChoice, opponentChoice);
+                if (winner === "draw") {
+                  await i.update({
+                    embeds: [
+                      embed.setDescription(
+                        `**${interaction.user.tag}** and **${opponent.tag}** choose the same move. \n\n The game is draw.`
+                      ),
+                    ],
+                    components: [],
+                  });
+                } else if (winner === "host") {
+                  const findHost = await client
+                    .db("user")
+                    .collection("userinfo")
+                    .findOne({ user: interaction.user.tag });
+                  const findOpponent = await client
+                    .db("user")
+                    .collection("userinfo")
+                    .findOne({ user: opponent.tag });
+                  await client
+                    .db("user")
+                    .collection("userinfo")
+                    .updateOne(
+                      { user: interaction.user.tag },
+                      { $set: { balance: findHost.balance + bet } }
+                    );
+                  await client
+                    .db("user")
+                    .collection("userinfo")
+                    .updateOne(
+                      { user: opponent.tag },
+                      { $set: { balance: findOpponent.balance - bet } }
+                    );
+                  await i.update({
+                    embeds: [
+                      embed.setDescription(
+                        `**${interaction.user.tag}** win the game. \n\n The game is over. \n\n **${interaction.user.tag}** get **${bet}** coins.`
+                      ),
+                    ],
+                    components: [],
+                  });
+                } else {
+                  const findHost = await client
+                    .db("user")
+                    .collection("userinfo")
+                    .findOne({ user: interaction.user.tag });
+                  const findOpponent = await client
+                    .db("user")
+                    .collection("userinfo")
+                    .findOne({ user: opponent.tag });
+                  await client
+                    .db("user")
+                    .collection("userinfo")
+                    .updateOne(
+                      { user: interaction.user.tag },
+                      { $set: { balance: findHost.balance - bet } }
+                    );
+                  await client
+                    .db("user")
+                    .collection("userinfo")
+                    .updateOne(
+                      { user: opponent.tag },
+                      { $set: { balance: findOpponent.balance + bet } }
+                    );
+                  await i.update({
+                    embeds: [
+                      embed.setDescription(
+                        `**${opponent.tag}** win the game. \n\n The game is over. \n\n **${opponent.tag}** get **${bet}** coins.`
+                      ),
+                    ],
+                    components: [],
+                  });
+                }
+              });
+              await collector.on("end", async (collected, reason) => {
+                if (collected.size === 0) {
+                  await interaction.editReply({
+                    embeds: [
+                      embed.setDescription(
+                        `**${opponent.tag}** didn't select their move. \n\n The game has been cancelled.`
+                      ),
+                    ],
+                    components: [],
+                  });
+                }
+              });
+            }
           });
-          //check if host or opponent don't choose
-          await collector1.on("end", async (collected) => {
+          await collector1.on("end", async (collected, reason) => {
             if (collected.size === 0) {
               await interaction.editReply({
                 embeds: [
                   embed.setDescription(
-                    `**Host didn't choose. \n The game has been cancelled.**`
+                    `**${interaction.user.tag}** didn't select their move. \n\n The game has been cancelled.`
                   ),
                 ],
                 components: [],
@@ -218,7 +298,7 @@ module.exports = {
   },
 };
 
-async function findWinner(hostChoice, opponentChoice) {
+function findWinner(hostChoice, opponentChoice) {
   if (hostChoice === opponentChoice) {
     return "draw";
   } else if (hostChoice === "rock") {
