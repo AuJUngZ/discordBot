@@ -7,6 +7,8 @@ const {
 } = require("discord.js");
 const { connectDB } = require("../../functions/functions.js");
 
+let time = 15;
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("rpscreate")
@@ -33,7 +35,7 @@ module.exports = {
     if (findUser == null) {
       await interaction.reply({
         content:
-          "You don't have user data. Please create your user data first. \n use this command to create your user data: **/createuser**",
+          "😊You don't have user data. Please create your user data first. \n use this command to create your user data: **/createuser**",
         ephemeral: true,
       });
       return;
@@ -51,9 +53,9 @@ module.exports = {
     const bet = interaction.options.getNumber("bet");
     const embed = new EmbedBuilder()
       .setColor("#fff")
-      .setTitle("Rock Paper Scissors")
+      .setTitle("👊🖐️✌️ Rock Paper Scissors 👊🖐️✌️")
       .setDescription(
-        `${opponent} You have been challenged to a game of rock paper scissors by **${interaction.user.tag}**. \n\n The bet is **${bet} coins**.`
+        `${opponent} You have been challenged to a game of rock paper scissors by **${interaction.user}**. \n\n The bet is **${bet} coins**.`
       )
       .setFooter({
         text: "Rock Paper Scissors",
@@ -62,11 +64,11 @@ module.exports = {
       .addComponents(
         new ButtonBuilder()
           .setCustomId("accept")
-          .setLabel("Accept")
+          .setLabel("Accept ✅")
           .setStyle(ButtonStyle.Success),
         new ButtonBuilder()
           .setCustomId("decline")
-          .setLabel("Decline")
+          .setLabel("Decline ⛔")
           .setStyle(ButtonStyle.Danger)
       )
       .toJSON();
@@ -91,7 +93,7 @@ module.exports = {
           await i.update({
             embeds: [
               embed.setDescription(
-                `**${opponent.tag}** don't have user data. \n\n The game has been cancelled.\n
+                `**${opponent}** don't have user data. \n\n The game has been cancelled.\n
                 Please create your user data first. \n use this command to create your user data: **/createuser**`
               ),
             ],
@@ -104,7 +106,7 @@ module.exports = {
             await i.update({
               embeds: [
                 embed.setDescription(
-                  `**${opponent.tag}** don't have enough balance to bet. \n\n The game has been cancelled.`
+                  `**${opponent}** don't have enough balance to bet. \n\n The game has been cancelled.`
                 ),
               ],
               components: [],
@@ -117,25 +119,26 @@ module.exports = {
             .addComponents(
               new ButtonBuilder()
                 .setCustomId("rock")
-                .setLabel("Rock")
+                .setLabel("Rock 🪨")
                 .setStyle(ButtonStyle.Primary),
               new ButtonBuilder()
                 .setCustomId("paper")
-                .setLabel("Paper")
+                .setLabel("Paper 📄")
                 .setStyle(ButtonStyle.Primary),
               new ButtonBuilder()
                 .setCustomId("scissors")
-                .setLabel("Scissors")
+                .setLabel("Scissors ✂️")
                 .setStyle(ButtonStyle.Primary)
             )
             .toJSON();
+
+          embed.setDescription(
+            `**${opponent}** has accepted the challenge. \n\n The game has been started.\n**${interaction.user}** choose your move. **Host select first.** \n\n **pls select in ${time} sec!!**`
+          );
+          embed.setColor("#b6d7a8");
+
           await i.update({
-            embeds: [
-              embed.setDescription(
-                `**${opponent.tag}** has accepted the challenge. \n\n The game has been started.
-                \n**${interaction.user.tag}** choose your move. **Host select first.** \n\n **pls select in 15 sec!!**`
-              ),
-            ],
+            embeds: [embed],
             components: [row1],
           });
           //create a new collector for host and opponent to choose their move
@@ -155,13 +158,12 @@ module.exports = {
               i.customId === "scissors"
             ) {
               hostChoice = i.customId;
+              embed.setDescription(
+                `**Now ${interaction.user} has been selected** \n\n **${opponent}** choose your move. **Opponent select next.** \n\n **pls select in 15 sec!!`
+              );
+              embed.setColor("#ff7678");
               await i.update({
-                embeds: [
-                  embed.setDescription(
-                    `**${opponent.tag}** has accepted the challenge. \n\n The game has been started.
-                            \n**${interaction.user.tag}** Already selected. **Then let's Opponent select.** \n\n **pls select in 15 sec!!**`
-                  ),
-                ],
+                embeds: [embed],
                 components: [row1],
               });
 
@@ -187,7 +189,7 @@ module.exports = {
                   await i.update({
                     embeds: [
                       embed.setDescription(
-                        `**${interaction.user.tag}** and **${opponent.tag}** choose the same move. \n\n The game is draw.`
+                        `${opponent} : ${opponentChoice}\n${interaction.user} : ${hostChoice} \n**${interaction.user.tag}** and **${opponent.tag}** choose the same move. \nThe game is draw.`
                       ),
                     ],
                     components: [],
@@ -218,7 +220,7 @@ module.exports = {
                   await i.update({
                     embeds: [
                       embed.setDescription(
-                        `**${interaction.user.tag}** win the game. \n\n The game is over. \n\n **${interaction.user.tag}** get **${bet}** coins.`
+                        `${opponent} : ${opponentChoice}\n${interaction.user} : ${hostChoice} \n\n**${interaction.user.tag}** win the game. \n**${interaction.user.tag}** get **${bet}** coins.`
                       ),
                     ],
                     components: [],
@@ -249,7 +251,7 @@ module.exports = {
                   await i.update({
                     embeds: [
                       embed.setDescription(
-                        `**${opponent.tag}** win the game. \n\n The game is over. \n\n **${opponent.tag}** get **${bet}** coins.`
+                        `${opponent} : ${opponentChoice}\n${interaction.user} : ${hostChoice} \n\n**${opponent.tag}** win the game. \n**${opponent.tag}** get **${bet}** coins.`
                       ),
                     ],
                     components: [],
@@ -285,12 +287,12 @@ module.exports = {
         }
       } else if (i.customId === "decline") {
         //if opponent decline the challenge
+        embed.setColor("#ff0000");
+        embed.setDescription(
+          `**${opponent.tag}** has declined the challenge. \n\n The game has been cancelled.`
+        );
         await i.update({
-          embeds: [
-            embed.setDescription(
-              `**${opponent.tag}** has declined the challenge. \n\n The game has been cancelled.`
-            ),
-          ],
+          embeds: [embed],
           components: [],
         });
       }
