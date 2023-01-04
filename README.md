@@ -8,6 +8,7 @@ This project is a my first project about Discord bot. This bot can do everything
 - Ramdom user
 - Ramdom number
 - Ramdom number in a range
+- Rock paper scissors game (store data in database)
 
 ## Comming soon
 
