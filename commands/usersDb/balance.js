@@ -31,6 +31,7 @@ module.exports = {
         embeds: [embed],
         ephemeral: true,
       });
+      client.close();
     } catch (err) {
       console.log(err);
     }

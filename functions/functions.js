@@ -11,4 +11,14 @@ async function connectDB() {
   return client;
 }
 
-module.exports = { connectDB };
+async function updateDB() {
+  const fields = {
+    last_used_work: 0,
+  };
+  //add this field to all of the users
+  const client = await connectDB();
+  const db = client.db("user");
+  const collection = db.collection("userinfo").updateMany({}, { $set: fields });
+}
+
+module.exports = { connectDB, updateDB };

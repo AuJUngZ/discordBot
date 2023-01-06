@@ -20,11 +20,24 @@ module.exports = {
         });
         return;
       }
+      //calculate time can work again in 30 seconds
+      if (timeDiff(findUser.last_used_work, Date.now()) < 30000) {
+        await interaction.reply({
+          content: `\`\`\`You can work again in ${
+            30 - timeDiff(findUser.last_used_work, Date.now()) / 1000
+          } seconds.\`\`\``,
+          ephemeral: true,
+        });
+        return;
+      }
       const work = Math.floor(Math.random() * 1000);
       await client
         .db("user")
         .collection("userinfo")
-        .updateOne({ user: interaction.user.tag }, { $inc: { balance: work } });
+        .updateOne(
+          { user: interaction.user.tag },
+          { $inc: { balance: work }, $set: { last_used_work: Date.now() } }
+        );
       const embed = new EmbedBuilder()
         .setColor("#fff")
         .setTitle("Work")
@@ -35,8 +48,14 @@ module.exports = {
       await interaction.reply({
         embeds: [embed],
       });
+      client.close();
     } catch (err) {
       console.log(err);
     }
   },
 };
+
+// calculate time difference from String of Date().getTime()
+function timeDiff(before, after) {
+  return Math.abs(after - before);
+}
